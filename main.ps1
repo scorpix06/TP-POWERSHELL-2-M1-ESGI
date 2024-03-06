@@ -1,5 +1,6 @@
 Import-Module -Name ./linode.psm1
 Import-Module -Name ./telegram.psm1
+Import-Module -Name ./logging.psm1
 
 Add-Type -AssemblyName System.Windows.Forms
 
@@ -35,7 +36,7 @@ $form.Controls.Add($textBox)
 $textBox2 = New-Object System.Windows.Forms.TextBox
 $textBox2.Location = New-Object System.Drawing.Point(50,110)
 $textBox2.Size = New-Object System.Drawing.Size(200,20)
-$textBox2.Text = "Root-Password@"
+$textBox2.Text = "Root-Password@06"
 $form.Controls.Add($textBox2)
 
 
@@ -58,14 +59,19 @@ $button.Add_Click({
     try {
         CreateLinodeServer -Region "fr-par" -Plan $Plan -Image $Image -Name $Name -RootPassword $RootPassword
         Send-TelegramMessage -Message "Deploiement du serveur [$Name] en cours"
-    } catch {
-        Write-Host "Erreur lors du deploiement du serveur : $($_.Exception.Message)"
-    }
-    #
-    
+        WriteLog -Message "Deploiement du serveur [$Name] en cours (plan: $Plan, Image: $Image)"
 
-    $message = "Le serveur est en cours de deploiement, la fenetre va se fermer. Les informations sont envoyes sur telegram`r`n"
-    [System.Windows.Forms.MessageBox]::Show($message, "Message")
+        $message = "Le serveur est en cours de deploiement, le suivi est envoye sur Telegram`r`n"
+        [System.Windows.Forms.MessageBox]::Show($message, "Message")
+        
+    } catch {
+
+        $message = "Une erreur a eu lieu lors du deploiement du serveur : $($_.Exception.Message)`r`n"
+        [System.Windows.Forms.MessageBox]::Show($message, "Message")
+        Write-Host "Erreur lors du deploiement du serveur : $($_.Exception.Message)"
+        WriteLog -Message "Une erreur a eu lieu lors du déploiement du serveur ($($_.Exception.Message))"
+    }
+
 })
 
 # Affichage du formulaire

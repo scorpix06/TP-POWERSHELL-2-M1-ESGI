@@ -29,7 +29,7 @@ function CreateLinodeServer {
         Write-Host ($Body | ConvertTo-Json)
         # Tentative d'appel à l'API Linode
         $Server = Invoke-WebRequest -Uri "$LinodeAPI/linode/instances" -Method Post -Headers @{Authorization = "Bearer $ApiKey"} -Body ($Body | ConvertTo-Json) -ContentType "application/json" -ErrorAction Stop | ConvertFrom-Json
-        
+        Write-Host $Server.Content
         return $Server
     }
     catch {
@@ -37,4 +37,14 @@ function CreateLinodeServer {
     }
 }
 
+function GetLinodeStatus {
+    param(
+        [string]$Name
+    )
+    # Tentative d'appel à l'API Linode
+    $Server = Invoke-WebRequest -Uri "$LinodeAPI/linode/instances" -Method Get -Headers @{Authorization = "Bearer $ApiKey"} -Body ($Body | ConvertTo-Json) -ContentType "application/json" -ErrorAction Stop | ConvertFrom-Json
+    Write-Host $Server.Content
+    return $Server
+
+}
 
