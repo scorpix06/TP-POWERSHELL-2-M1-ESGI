@@ -1,0 +1,17 @@
+---
+# Fichier de configurations
+
+# Liste des types de serveur disponible
+plan:
+- "g6-nanode-1"
+- "g6-standard-1"
+
+# Liste des OS disponible
+os:
+- "linode/debian12"
+- "linode/alpine3.19"
+- "linode/ubuntu22.04"
+
+default_password: "Root-Password@69"
+default_server_name: "Serveur-Name"
+
