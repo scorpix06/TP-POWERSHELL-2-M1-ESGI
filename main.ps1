@@ -32,7 +32,7 @@ $comboBox1.Text = "Choix de l'OS :"
 $comboBox1.Items.AddRange($Settings.os)
 $form.Controls.Add($comboBox1)
 
-# Création d'une liste déroulante pour les specifications
+# Création d'une liste déroulante pour les specifications de  la VM
 $comboBox2 = New-Object System.Windows.Forms.ComboBox
 $comboBox2.Location = New-Object System.Drawing.Point(50, 50)
 $comboBox2.Size = New-Object System.Drawing.Size(200, 20)
@@ -47,6 +47,7 @@ $textBox.Size = New-Object System.Drawing.Size(200,20)
 $textBox.Text = "$DefaultServerName"
 $form.Controls.Add($textBox)
 
+# Création d'un champ de texte pour recuperer le mot de passe de la VM cloud
 $textBox2 = New-Object System.Windows.Forms.TextBox
 $textBox2.Location = New-Object System.Drawing.Point(50,110)
 $textBox2.Size = New-Object System.Drawing.Size(200,20)
@@ -82,14 +83,15 @@ $button.Add_Click({
         $message = "Le serveur est en cours de deploiement, le suivi est envoye sur Telegram`r`n"
         [System.Windows.Forms.MessageBox]::Show($message, "Message")
 
+        # Boucle jusqu'a ce que le serveur soit dans l'état "running" afin de prevenir que le serveur est utilisable sur telegram
         while (($Server.status -eq "provisioning") -or ($Server.status -eq "booting")) {
-
+            Start-Sleep -Seconds 5
             $Server = GetLinodeStatus -Id $Server.id
             if ($Server.status -eq "running") {
                 Send-TelegramMessage -Message "Le serveur [$Name] est deploye. Vous pouvez desormais vous y connecter." 
-                Write-Log -Message "Le serveur [$Name] est déployé"  
+                WriteLog -Message "Le serveur [$Name] est déployé"  
             }
-            Start-Sleep -Seconds 9
+           
         }
         
     } catch {
@@ -101,5 +103,5 @@ $button.Add_Click({
 
 })
 
-# Affichage du formulaire
+# Affichage de l'interface graphique
 $form.ShowDialog() | Out-Null
